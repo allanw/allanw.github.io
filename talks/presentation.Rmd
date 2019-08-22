@@ -1,0 +1,135 @@
+---
+title: Docker + Kubernetes
+date: 23rd August 2019
+output: 
+  revealjs::revealjs_presentation:
+    theme: black
+    transition: slide
+    highlight: zenburn
+    lang: python
+    self_contained: false
+    reveal_plugins: ["notes"]
+---
+
+## What is Docker?
+
+![](assets/shipping_container.png)
+
+- Containerisation
+- Microservice architecture
+- Ship code easily
+
+## A simple Dockerfile
+
+![](assets/docker.png)
+
+```Dockerfile
+FROM python:3
+  
+WORKDIR /app
+
+COPY hello.py /app
+```
+
+```
+docker build -t mydockertest .
+```
+
+## Using the Docker image
+
+Bash prompt
+```
+docker run -it mydockertest /bin/bash
+```
+
+Run Python shell and import module
+```
+docker run -it mydockertest python -m "this"
+```
+
+Run Python code
+```
+docker run -it mydockertest python /app/hello.py
+```
+
+## Installing requirements
+
+```Dockerfile
+FROM python:3
+  
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["python", "weather.py"]
+```
+
+## Run anything
+
+- Any code can be run in a container
+
+![](assets/niklaus_wirth.jpg)
+
+<aside class="notes">
+- Even Pascal
+- cat hello.p
+</aside>
+
+## Even this
+
+- Compile it
+```
+docker run -it -v $(pwd):/source nacyot/pascal-fp_compiler:apt pc /source/hello.p
+```
+
+- Run it
+```
+docker run -it -v $(pwd):/source nacyot/pascal-fp_compiler:apt ./hello
+```
+
+## What is Kubernetes (K8s)?
+
+![](assets/kubernetes.png)
+
+- Also known as K8s
+- Container orchestration
+- Developed by Google and open-sourced
+- Basic unit of operation is a 'pod'
+
+<aside class="notes">
+Greek for "governor", "helmsman" or "captain")
+</aside>
+
+## Airflow
+
+![](assets/airflow.png)
+
+## Airflow
+
+- Developed by Airbnb then open sourced
+- Author and schedule workflows/pipelines
+- Plugin architecture (e.g. plugins for talking to databases, posting alerts to Slack)
+- Can be run on Kubernetes and as of recently, can run Kubernetes pods
+- Main concept is a DAG (directed acyclic graph)
+![](assets/dag.png)
+
+## KubernetesPodOperator {data-line-numbers="4,8"}
+
+```python
+passing = KubernetesPodOperator(namespace='airflow',
+                          image="python:3.6",
+                          cmds=["python", "/dags/test-python.py"],
+                          labels={"foo": "bar"},
+                          name="my-tas-namek",
+                          task_id="my-task",
+                          volume_mounts=[volume_mount],
+                          volumes=[volume],
+                          get_logs=True,
+                          in_cluster=True,
+                          dag=dag
+                          )
+```
+
+## Live Demo (Kubernetes running an Airflow task)
