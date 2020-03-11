@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="presentation_files/reveal.js-3.3.0.1/css/reveal.css"/>
+  <link rel="stylesheet" href="presentation2_files/reveal.js-3.3.0.1/css/reveal.css"/>
 
 
 <style type="text/css">
@@ -50,7 +50,7 @@ code > span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
 code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 </style>
 
-<link rel="stylesheet" href="presentation_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+<link rel="stylesheet" href="presentation2_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
 
 
   <!-- some tweaks to reveal css -->
@@ -497,8 +497,11 @@ document.getElementsByTagName('head')[0].appendChild(style);
 <ul>
 <li>Data engineer (previously a software developer/web developer)</li>
 <li>Working at Open Colleges</li>
-<li></li>
+<li>You can call me Al (not to be confused with AI)</li>
 </ul>
+<aside class="notes">
+OC is a provider of online vocational education
+</aside>
 </section>
 <section id="what-is-meltano" class="slide level2">
 <h2>What is Meltano?</h2>
@@ -519,18 +522,84 @@ document.getElementsByTagName('head')[0].appendChild(style);
 <ul>
 <li>Developed by GitLab</li>
 <li>“Data dashboards for startup founders”</li>
-<li><p>“Analytics software to visualize your business operations”</p></li>
-<li><p>Python (Flask) backend, Vue.js frontend</p></li>
+<li>“Analytics software to visualize your business operations”</li>
+<li>Python (Flask) backend, Vue.js frontend</li>
+</ul>
+<aside class="notes">
+Anyone already heard of Meltano?
+</aside>
+</section>
+<section id="what-is-meltano-2" class="slide level2">
+<h2>What is Meltano?</h2>
+<p><img src="assets/meltano_tech.png" /></p>
+</section>
+<section id="im-gonna-have-to-go-ahead-and-ask-you" class="slide level2">
+<h2>I’m gonna have to go ahead and ask you…</h2>
+<p><img src="assets/lumbergh.jpg" /></p>
+<ul>
+<li>
+Is this a turnkey solution?<span class="fragment"> No</span>
+</li>
+<li>
+Is it enterprise-ready?<span class="fragment"> No!</span>
+</li>
+</ul>
+</section>
+<section id="meltanos-target-persona" class="slide level2">
+<h2>Meltano’s target persona</h2>
+<ul>
+<li>Startup founders</li>
+<li>“Using Meltano in single player mode”</li>
+<li>Busy people, don’t have “analyst” in their job title</li>
+<li>“Needs to do both engineering tasks and analyst tasks because there is nobody else”</li>
+<li>Would rather stay away from the command line</li>
+</ul>
+<p><img src="assets/startup.jpeg" /></p>
+<p><small><a href="https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/" class="uri">https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/</a></small></p>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<blockquote>
+<p>“Building <del>machine learning</del> data systems in <del>2019</del> 2020 feels like stacking together Lego. Except, you have to construct all the Lego pieces from scratch. In the dark.” <small>Stephen Whitworth, Monzo Bank, <a href="https://stephen.sh/posts/why-is-building-ml-systems-so-hard" class="uri">https://stephen.sh/posts/why-is-building-ml-systems-so-hard</a></small></p>
+</blockquote>
+<p><img src="assets/drake_dbt.png" /></p>
+<aside class="notes">
+Found this on the dbt Slack channel
+</aside>
+</section>
+<section id="built-in-data-sources" class="slide level2">
+<h2>Built in data sources</h2>
+<ul>
+<li>Stripe</li>
+<li>Uses Singer so custom taps are possible</li>
+</ul>
+<p><img src="assets/connectors.png" /></p>
+</section>
+<section id="targets" class="slide level2">
+<h2>Targets</h2>
+<p><img src="assets/targets.png" /></p>
+</section>
+<section id="visualisation" class="slide level2">
+<h2>Visualisation</h2>
+<ul>
+<li>Alternative to other visualisation tools</li>
+</ul>
+<p><img src="assets/vistools.png" /></p>
+</section>
+<section id="enter-dbt" class="slide level2">
+<h2>Enter dbt</h2>
+<ul>
+<li>dbt is the ‘T’ in Meltano</li>
+<li>Critical step in the pipeline as it defines how data will be represented in the database/warehouse</li>
+</ul>
+</section>
+<section id="model-files" class="slide level2">
+<h2>Model files</h2>
+<ul>
+<li>Similar to lookml</li>
 </ul>
 </section>
 <section id="a-simple-dockerfile" class="slide level2">
-<h2>A simple Dockerfile</h2>
-<ul>
-<li>“Building machine learning systems in <del>2019</del> 2020 feels like stacking together Lego. Except, you have to construct all the Lego pieces from scratch. In the dark.”</li>
-</ul>
-<p><img src="assets/drake_dbt.png" /></p>
-</section>
-<section id="a-simple-dockerfile-1" class="slide level2">
 <h2>A simple Dockerfile</h2>
 <p><img src="assets/docker.png" /></p>
 <div class="sourceCode"><pre class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span class="kw">FROM</span> python:3
@@ -633,20 +702,31 @@ Greek for “governor”, “helmsman” or “captain”)
                           dag<span class="op">=</span>dag
                           )</code></pre></div>
 </section>
-<section id="helpresources" class="slide level2">
-<h2>Help/resources</h2>
+<section id="next-stepshelpresources" class="slide level2">
+<h2>Next steps/help/resources/</h2>
 <ul>
+<li>Sign up for a free hosted Meltano instance at <a href="https://meltano.com/" class="uri">https://meltano.com/</a></li>
 <li>Meltano Slack channel</li>
+</ul>
+</section>
+<section id="thanks" class="slide level2">
+<h2>Thanks</h2>
+<ul>
+<li><p>Obligatory “we’re hiring” message</p></li>
+<li><p>Run With Al - online running coaching startup, looking for users/collaborators</p></li>
 </ul>
 </section>
 <section id="live-demo-kubernetes-running-an-airflow-task" class="slide level2">
 <h2>Live Demo (Kubernetes running an Airflow task)</h2>
 </section>
+<section id="questions" class="slide level2">
+<h2>Questions</h2>
+</section>
     </div>
   </div>
 
-  <script src="presentation_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
-  <script src="presentation_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+  <script src="presentation2_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="presentation2_files/reveal.js-3.3.0.1/js/reveal.js"></script>
 
   <script>
 
@@ -666,7 +746,7 @@ Greek for “governor”, “helmsman” or “captain”)
 
         // Optional reveal.js plugins
         dependencies: [
-          { src: 'presentation_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+          { src: 'presentation2_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
         ]
       });
     </script>
