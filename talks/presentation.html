@@ -497,7 +497,8 @@ document.getElementsByTagName('head')[0].appendChild(style);
 <ul>
 <li>Data engineer (previously a software developer/web developer)</li>
 <li>Working at Open Colleges</li>
-<li>You can call me Al (not to be confused with AI)</li>
+<li>Moving to dbt/Snowflake at work</li>
+<li>Testing out Meltano in spare time</li>
 </ul>
 <aside class="notes">
 OC is a provider of online vocational education
@@ -523,7 +524,8 @@ OC is a provider of online vocational education
 <li>Developed by GitLab</li>
 <li>“Data dashboards for startup founders”</li>
 <li>“Analytics software to visualize your business operations”</li>
-<li>Python (Flask) backend, Vue.js frontend</li>
+<li>Convention over configuration</li>
+<li>Designed to be an end-to-end solution</li>
 </ul>
 <aside class="notes">
 Anyone already heard of Meltano?
@@ -548,11 +550,10 @@ Is it enterprise-ready?<span class="fragment"> No!</span>
 <section id="meltanos-target-persona" class="slide level2">
 <h2>Meltano’s target persona</h2>
 <ul>
-<li>Startup founders</li>
-<li>“Using Meltano in single player mode”</li>
-<li>Busy people, don’t have “analyst” in their job title</li>
+<li>Startup founders, “using Meltano in single player mode”</li>
+<li>Busy people, don’t have “analyst” or “engineer” in their job title</li>
 <li>“Needs to do both engineering tasks and analyst tasks because there is nobody else”</li>
-<li>Would rather stay away from the command line</li>
+<li>Would rather stay away from the CLI</li>
 </ul>
 <p><img src="assets/startup.jpeg" /></p>
 <p><small><a href="https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/" class="uri">https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/</a></small></p>
@@ -570,7 +571,7 @@ Found this on the dbt Slack channel
 <section id="built-in-data-sources" class="slide level2">
 <h2>Built in data sources</h2>
 <ul>
-<li>Stripe</li>
+<li>Some frequently used SaaS platforms (and adding more)</li>
 <li>Uses Singer so custom taps are possible</li>
 </ul>
 <p><img src="assets/connectors.png" /></p>
@@ -586,6 +587,111 @@ Found this on the dbt Slack channel
 </ul>
 <p><img src="assets/vistools.png" /></p>
 </section>
+<section id="orchestration" class="slide level2">
+<h2>Orchestration</h2>
+<ul>
+<li>Alternative to other orchestration tools/schedulers/workflow engines</li>
+<li>Uses Airflow under the hood (just scheduler, UI not exposed)</li>
+</ul>
+<p><img src="assets/orchestration.png" /></p>
+</section>
+<section id="creating-custom-extractors" class="slide level2">
+<h2>Creating custom extractors</h2>
+<ul>
+<li>Follows Singer tap spec
+<pre class="small">meltano add --custom extractor tap-surveymonkey</pre></li>
+<li>Tap-specific settings defined in <span class="small"><code>meltano.yml</code>
+</pre>
+file and reference <span class="small"><code>.env</code>
+</pre>
+file</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">    settings:
+    - env: ACCESS_TOKEN
+      name: access_token
+    - env: START_DATE
+      name: start_date
+    - env: SURVEY_ID
+      name: survey_id</code></pre></div>
+<pre>meltano invoke tap-gitlab-custom --discover</pre>
+<pre>meltano elt tap-surveymonkey target-postgresql</pre>
+<aside class="notes">
+Discover will output the catalog/properties (JSON schema)
+</aside>
+</section>
+<section id="topic-files" class="slide level2">
+<h2>Topic files</h2>
+<ul>
+<li>Similar in some ways to lookml</li>
+</ul>
+<pre class="small">model/surveymonkey.topic.m5o</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">{
+  version = <span class="dv">1</span>
+  name = surveymonkey
+  plugin_namespace = tap_surveymonkey
+  connection = postgres_db
+  <span class="kw">label</span> = SurveyMonkey
+  designs {
+    responses_source {
+      <span class="kw">label</span> = Responses
+      <span class="kw">from</span> = responses_source
+      description = Survey Monkey responses
+      joins {
+        survey_details {
+          <span class="kw">label</span> = SurveyDetails
+          sql_on = <span class="ot">&quot;responses_source.choice_id = survey_details.choice_id&quot;</span>
+          relationship = many_to_one
+        }
+        questions {
+          <span class="kw">label</span> = Questions
+          sql_on = <span class="ot">&quot;responses_source.question_id = questions.question_id&quot;</span>
+          relationship = many_to_one
+        }
+      }
+    }
+    surveystats {
+      <span class="kw">label</span> = Survey Stats
+      <span class="kw">from</span> = survey_stats
+      description = Survey Monkey Stats
+    }
+  }
+}</code></pre></div>
+</section>
+<section id="table-files" class="slide level2">
+<h2>Table files</h2>
+<pre class="small">model/survey_stats.table.m5o</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">{
+  version = <span class="dv">1</span>
+  sql_table_name = surveymonkey
+  name = survey_stats
+  <span class="kw">columns</span> {
+    heading {
+      <span class="kw">label</span> = Heading
+      hidden = <span class="kw">false</span>
+      <span class="kw">type</span> = string
+      sql = <span class="ot">&quot;{{TABLE}}.heading&quot;</span>
+    }
+    choice_text {
+      <span class="kw">label</span> = Choice Text
+      hidden = <span class="kw">false</span>
+      <span class="kw">type</span> = string
+      sql = <span class="ot">&quot;{{TABLE}}.choice_text&quot;</span>
+    }
+  }
+
+...</code></pre></div>
+</section>
+<section id="table-files-continued" class="slide level2">
+<h2>Table files (continued)</h2>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">...
+  aggregates {
+    total {
+      <span class="kw">label</span> = Totals
+      description = Totals
+      <span class="kw">type</span> = <span class="fu">sum</span>
+      sql = <span class="ot">&quot;{{table}}.count_choices&quot;</span>
+    }</code></pre></div>
+</section>
 <section id="enter-dbt" class="slide level2">
 <h2>Enter dbt</h2>
 <ul>
@@ -593,134 +699,102 @@ Found this on the dbt Slack channel
 <li>Critical step in the pipeline as it defines how data will be represented in the database/warehouse</li>
 </ul>
 </section>
-<section id="model-files" class="slide level2">
-<h2>Model files</h2>
+<section id="dbt-profiles-file" class="slide level2">
+<h2>dbt profiles file</h2>
 <ul>
-<li>Similar to lookml</li>
+<li>dbt config files by Meltano as part of installation</li>
 </ul>
+<pre class="small">transform/profile/profiles.yml</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">config:
+  send_anonymous_usage_stats: <span class="kw">False</span>
+  use_colors: <span class="kw">True</span>
+meltano:
+  target: <span class="ot">&quot;{{ env_var(&#39;DBT_TARGET&#39;) }}&quot;</span>
+  outputs:
+    snowflake:
+      type: snowflake
+      threads: <span class="dv">2</span>
+      account: <span class="ot">&quot;{{ env_var(&#39;SF_ACCOUNT&#39;) }}&quot;</span>
+      user: <span class="ot">&quot;{{ env_var(&#39;SF_USER&#39;) }}&quot;</span>
+      password: <span class="ot">&quot;{{ env_var(&#39;SF_PASSWORD&#39;) }}&quot;</span>
+      role: <span class="ot">&quot;{{ env_var(&#39;SF_ROLE&#39;) }}&quot;</span>
+      database: <span class="ot">&quot;{{ env_var(&#39;SF_DATABASE&#39;) }}&quot;</span>
+      warehouse: <span class="ot">&quot;{{ env_var(&#39;SF_WAREHOUSE&#39;) }}&quot;</span>
+      schema: <span class="ot">&quot;{{ env_var(&#39;MELTANO_ANALYZE_SCHEMA&#39;, &#39;ANALYTICS&#39;) }}&quot;</span></code></pre></div>
 </section>
-<section id="a-simple-dockerfile" class="slide level2">
-<h2>A simple Dockerfile</h2>
-<p><img src="assets/docker.png" /></p>
-<div class="sourceCode"><pre class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span class="kw">FROM</span> python:3
+<section id="dbt-models" class="slide level2">
+<h2>dbt models</h2>
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/surveymonkey.sql</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">with</span> questions <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;questions&#39;</span>) }}
+),
+
+responses <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;responses_source&#39;</span>) }}
+),
+
+survey_details <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;survey_details&#39;</span> ) }}
+)
+
+<span class="kw">select</span>
+        qu.heading <span class="kw">as</span> heading,
+        sd.choice_text <span class="kw">as</span> choice_text,
+        <span class="fu">count</span>(sd.choice_id) <span class="kw">as</span> count_choices
+<span class="kw">from</span>
+  questions qu
+<span class="kw">join</span> responses r <span class="kw">on</span> qu.question_id = r.question_id
+<span class="kw">join</span> survey_details sd <span class="kw">on</span> sd.choice_id = r.choice_id
+<span class="kw">group</span> <span class="kw">by</span> qu.heading, sd.choice_text</code></pre></div>
+</section>
+<section id="dbt-models-continued" class="slide level2">
+<h2>dbt models (continued)</h2>
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/survey_details.sql </pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">with</span> questions <span class="kw">as</span> (
   
-<span class="kw">WORKDIR</span> /app
+<span class="kw">select</span>  json_array_elements(sd.pages:<span class="ch">:json</span>)-&gt;<span class="st">&#39;questions&#39;</span> qus <span class="kw">from</span> tap_surveymonkey.survey_details sd
+),
 
-<span class="kw">COPY</span> hello.py /app</code></pre></div>
-<pre><code>docker build -t mydockertest .</code></pre>
-</section>
-<section id="using-the-docker-image" class="slide level2">
-<h2>Using the Docker image</h2>
-<p>Bash prompt</p>
-<pre><code>docker run -it mydockertest /bin/bash</code></pre>
-<p>Run Python shell and import module</p>
-<pre><code>docker run -it mydockertest python -m &quot;this&quot;</code></pre>
-<p>Run Python code</p>
-<pre><code>docker run -it mydockertest python /app/hello.py</code></pre>
-</section>
-<section id="installing-requirements" class="slide level2">
-<h2>Installing requirements</h2>
-<div class="sourceCode"><pre class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span class="kw">FROM</span> python:3
-  
-<span class="kw">WORKDIR</span> /app
+answers <span class="kw">as</span> (
+  <span class="kw">select</span>
+        json_array_elements(qus)-&gt;<span class="st">&#39;answers&#39;</span> ans
+  <span class="kw">from</span> questions
+)
 
-<span class="kw">COPY</span> . /app
-
-<span class="kw">RUN</span> pip install -r requirements.txt
-
-<span class="kw">ENTRYPOINT</span> [<span class="st">&quot;python&quot;</span>, <span class="st">&quot;weather.py&quot;</span>]</code></pre></div>
+<span class="kw">select</span>
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;id&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> choice_id,
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;text&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> choice_text,
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;image&#39;</span>-&gt;<span class="st">&#39;url&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> image_url
+<span class="kw">from</span> answers</code></pre></div>
 </section>
-<section id="run-anything" class="slide level2">
-<h2>Run anything</h2>
+<section id="demo" class="slide level2">
+<h2>Demo</h2>
 <ul>
-<li>Any code can be run in a container</li>
-</ul>
-<p><img src="assets/niklaus_wirth.jpg" /></p>
-<aside class="notes">
-<ul>
-<li>Even Pascal</li>
-<li>cat hello.p</li>
-</ul>
-</aside>
-</section>
-<section id="even-this" class="slide level2">
-<h2>Even this</h2>
-<ul>
-<li><p>Compile it</p>
-<pre><code>docker run -it -v $(pwd):/source nacyot/pascal-fp_compiler:apt pc /source/hello.p</code></pre></li>
-<li><p>Run it</p>
-<pre><code>docker run -it -v $(pwd):/source nacyot/pascal-fp_compiler:apt ./hello</code></pre></li>
-</ul>
-</section>
-<section id="what-is-kubernetes-k8s" class="slide level2">
-<h2>What is Kubernetes (K8s)?</h2>
-<p><img src="assets/kubernetes.png" /></p>
-<ul>
-<li>Also known as K8s</li>
-<li>Container orchestration</li>
-<li>Developed by Google and open-sourced</li>
-<li>Basic unit of operation is a ‘pod’</li>
+<li>Meltano ui</li>
+<li>Python (Flask) backend, Vue.js frontend</li>
 </ul>
 <aside class="notes">
-Greek for “governor”, “helmsman” or “captain”)
+Easy to embed reports
 </aside>
-</section>
-<section id="airflow" class="slide level2">
-<h2>Airflow</h2>
-<p><img src="assets/airflow.png" /></p>
-</section>
-<section id="why-kubernetes" class="slide level2">
-<h2>Why Kubernetes?</h2>
-<ul>
-<li>Scalable</li>
-<li>Flexible</li>
-<li>Fault tolerant</li>
-</ul>
-</section>
-<section id="airflow-1" class="slide level2">
-<h2>Airflow</h2>
-<ul>
-<li>Developed by Airbnb then open sourced</li>
-<li>Author and schedule workflows/pipelines</li>
-<li>Plugin architecture (e.g. plugins for talking to databases, posting alerts to Slack)</li>
-<li>Can be run on Kubernetes and as of recently, can run Kubernetes pods</li>
-<li>Main concept is a DAG (directed acyclic graph) <img src="assets/dag.png" /></li>
-</ul>
-</section>
-<section id="kubernetespodoperator" class="slide level2" data-line-numbers="4,8">
-<h2>KubernetesPodOperator</h2>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">passing <span class="op">=</span> KubernetesPodOperator(namespace<span class="op">=</span><span class="st">&#39;airflow&#39;</span>,
-                          image<span class="op">=</span><span class="st">&quot;python:3.6&quot;</span>,
-                          cmds<span class="op">=</span>[<span class="st">&quot;python&quot;</span>, <span class="st">&quot;/dags/test-python.py&quot;</span>],
-                          labels<span class="op">=</span>{<span class="st">&quot;foo&quot;</span>: <span class="st">&quot;bar&quot;</span>},
-                          name<span class="op">=</span><span class="st">&quot;my-tas-namek&quot;</span>,
-                          task_id<span class="op">=</span><span class="st">&quot;my-task&quot;</span>,
-                          volume_mounts<span class="op">=</span>[volume_mount],
-                          volumes<span class="op">=</span>[volume],
-                          get_logs<span class="op">=</span><span class="va">True</span>,
-                          in_cluster<span class="op">=</span><span class="va">True</span>,
-                          dag<span class="op">=</span>dag
-                          )</code></pre></div>
 </section>
 <section id="next-stepshelpresources" class="slide level2">
 <h2>Next steps/help/resources/</h2>
 <ul>
+<li>Install locally (virtualenv/Docker)</li>
 <li>Sign up for a free hosted Meltano instance at <a href="https://meltano.com/" class="uri">https://meltano.com/</a></li>
+<li>Set up a provisioned Digital Ocean droplet using 1-click app (Packer templates are in Meltano repo)</li>
+<li>Contribute <a href="https://meltano.com/developer-tools/contributor-guide.html" class="uri">https://meltano.com/developer-tools/contributor-guide.html</a></li>
 <li>Meltano Slack channel</li>
 </ul>
 </section>
 <section id="thanks" class="slide level2">
 <h2>Thanks</h2>
 <ul>
-<li><p>Obligatory “we’re hiring” message</p></li>
-<li><p>Run With Al - online running coaching startup, looking for users/collaborators</p></li>
+<li>Obligatory “we’re hiring” message</li>
 </ul>
 </section>
-<section id="live-demo-kubernetes-running-an-airflow-task" class="slide level2">
-<h2>Live Demo (Kubernetes running an Airflow task)</h2>
-</section>
 <section id="questions" class="slide level2">
-<h2>Questions</h2>
+<h2>Questions?</h2>
 </section>
     </div>
   </div>
