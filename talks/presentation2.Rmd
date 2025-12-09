@@ -1,0 +1,319 @@
+---
+title: "Sydney DBT Meetup - Meltano"
+author: Allan Whatmough
+date: 12th March 2020
+output: 
+  revealjs::revealjs_presentation:
+    theme: simple
+    transition: slide
+    highlight: zenburn
+    lang: python
+    self_contained: false
+    reveal_plugins: ["notes"]
+---
+
+## $ whoami
+
+- Data engineer (previously a software developer/web developer)
+- Working at Open Colleges
+- Moving to dbt/Snowflake at work
+- Testing out Meltano in spare time
+
+<aside class="notes">
+OC is a provider of online vocational education		
+</aside>
+
+## What is Meltano?
+
+![](assets/meltano.png)
+
+- **_M_**odel
+- **_E_**xtract
+- **_L_**oad
+- **_T_**ransform
+- **_A_**nalyse
+- **_N_**otebook
+- **_O_**rchestrate
+
+## What is Meltano?
+
+![](assets/meltano.png)
+
+- Developed by GitLab
+- "Data dashboards for startup founders"
+- "Analytics software to visualize your business operations"
+- Convention over configuration
+- Designed to be an end-to-end solution
+
+<aside class="notes">
+Anyone already heard of Meltano?		
+</aside>
+
+## What is Meltano?
+
+![](assets/meltano_tech.png)
+
+## I'm gonna have to go ahead and ask you...
+
+![](assets/lumbergh.jpg)
+
+<ul>
+  <li>Is this a turnkey solution?<span class="fragment"> No</span></li>
+  <li>Is it enterprise-ready?<span class="fragment"> No!</span></li>
+</ul>
+
+## Meltano's target persona
+
+- Startup founders, "using Meltano in single player mode"
+- Busy people, don't have "analyst" or "engineer" in their job title
+- "Needs to do both engineering tasks and analyst tasks because there is nobody else"
+- Would rather stay away from the CLI
+
+![](assets/startup.jpeg)
+
+<small>https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/</small>
+
+##
+
+> "Building ~~machine learning~~ data systems in ~~2019~~ 2020 feels like stacking together Lego. Except, you have to construct all the Lego pieces from scratch. In the dark."
+<small>Stephen Whitworth, Monzo Bank, https://stephen.sh/posts/why-is-building-ml-systems-so-hard</small>
+
+![](assets/drake_dbt.png)
+
+<aside class="notes">
+  Found this on the dbt Slack channel
+</aside>
+
+## Built in data sources
+
+- Some frequently used SaaS platforms (and adding more)
+- Uses Singer so custom taps are possible
+
+![](assets/connectors.png)
+
+## Targets
+
+![](assets/targets.png)
+
+
+## Visualisation
+
+- Alternative to other visualisation tools
+
+![](assets/vistools.png)
+
+## Orchestration
+
+- Alternative to other orchestration tools/schedulers/workflow engines
+- Uses Airflow under the hood (just scheduler, UI not exposed)
+
+![](assets/orchestration.png)
+
+
+## Creating custom extractors
+
+- Follows Singer tap spec
+<pre class="small">meltano add --custom extractor tap-surveymonkey</pre>
+- Tap-specific settings defined in <span class="small">`meltano.yml`</pre> file and reference <span class="small">`.env`</pre> file
+
+```sql
+    settings:
+    - env: ACCESS_TOKEN
+      name: access_token
+    - env: START_DATE
+      name: start_date
+    - env: SURVEY_ID
+      name: survey_id
+```
+
+<pre>meltano invoke tap-gitlab-custom --discover</pre>
+<pre>meltano elt tap-surveymonkey target-postgresql</pre>
+
+<aside class="notes">
+Discover will output the catalog/properties (JSON schema)	
+</aside>
+
+## Topic files
+
+- Similar in some ways to lookml
+
+<pre class="small">model/surveymonkey.topic.m5o</pre>
+
+```sql
+{
+  version = 1
+  name = surveymonkey
+  plugin_namespace = tap_surveymonkey
+  connection = postgres_db
+  label = SurveyMonkey
+  designs {
+    responses_source {
+      label = Responses
+      from = responses_source
+      description = Survey Monkey responses
+      joins {
+        survey_details {
+          label = SurveyDetails
+          sql_on = "responses_source.choice_id = survey_details.choice_id"
+          relationship = many_to_one
+        }
+        questions {
+          label = Questions
+          sql_on = "responses_source.question_id = questions.question_id"
+          relationship = many_to_one
+        }
+      }
+    }
+    surveystats {
+      label = Survey Stats
+      from = survey_stats
+      description = Survey Monkey Stats
+    }
+  }
+}
+```
+
+## Table files
+
+<pre class="small">model/survey_stats.table.m5o</pre>
+
+```sql
+{
+  version = 1
+  sql_table_name = surveymonkey
+  name = survey_stats
+  columns {
+    heading {
+      label = Heading
+      hidden = false
+      type = string
+      sql = "{{TABLE}}.heading"
+    }
+    choice_text {
+      label = Choice Text
+      hidden = false
+      type = string
+      sql = "{{TABLE}}.choice_text"
+    }
+  }
+
+...
+```
+
+## Table files (continued)
+
+```sql
+...
+  aggregates {
+    total {
+      label = Totals
+      description = Totals
+      type = sum
+      sql = "{{table}}.count_choices"
+    }
+```
+
+## Enter dbt
+
+- dbt is the 'T' in Meltano
+- Critical step in the pipeline as it defines how data will be represented in the database/warehouse
+
+## dbt profiles file
+
+- dbt config files by Meltano as part of installation
+
+<pre class="small">transform/profile/profiles.yml</pre>
+
+```sql
+config:
+  send_anonymous_usage_stats: False
+  use_colors: True
+meltano:
+  target: "{{ env_var('DBT_TARGET') }}"
+  outputs:
+    snowflake:
+      type: snowflake
+      threads: 2
+      account: "{{ env_var('SF_ACCOUNT') }}"
+      user: "{{ env_var('SF_USER') }}"
+      password: "{{ env_var('SF_PASSWORD') }}"
+      role: "{{ env_var('SF_ROLE') }}"
+      database: "{{ env_var('SF_DATABASE') }}"
+      warehouse: "{{ env_var('SF_WAREHOUSE') }}"
+      schema: "{{ env_var('MELTANO_ANALYZE_SCHEMA', 'ANALYTICS') }}"
+```
+
+
+## dbt models
+
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/surveymonkey.sql</pre>
+
+```sql
+with questions as (
+        select * from {{ ref('questions') }}
+),
+
+responses as (
+        select * from {{ ref('responses_source') }}
+),
+
+survey_details as (
+        select * from {{ ref('survey_details' ) }}
+)
+
+select
+        qu.heading as heading,
+        sd.choice_text as choice_text,
+        count(sd.choice_id) as count_choices
+from
+  questions qu
+join responses r on qu.question_id = r.question_id
+join survey_details sd on sd.choice_id = r.choice_id
+group by qu.heading, sd.choice_text
+```
+
+## dbt models (continued)
+
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/survey_details.sql </pre>
+
+```sql
+with questions as (
+  
+select  json_array_elements(sd.pages::json)->'questions' qus from tap_surveymonkey.survey_details sd
+),
+
+answers as (
+  select
+        json_array_elements(qus)->'answers' ans
+  from questions
+)
+
+select
+  array_to_json(array[to_json(json_array_elements(ans->'choices')->'id'::TEXT)])->>0  as choice_id,
+  array_to_json(array[to_json(json_array_elements(ans->'choices')->'text'::TEXT)])->>0  as choice_text,
+  array_to_json(array[to_json(json_array_elements(ans->'choices')->'image'->'url'::TEXT)])->>0  as image_url
+from answers
+```
+
+## Demo
+
+- Meltano UI
+- Python (Flask) backend, Vue.js frontend
+
+<aside class="notes">
+Easy to embed reports	
+</aside>
+
+## Next steps/help/resources/
+
+- Install locally (virtualenv/Docker)
+- Sign up for a free hosted Meltano instance at https://meltano.com/
+- Set up a provisioned Digital Ocean droplet using 1-click app (Packer templates are in Meltano repo)
+- Contribute https://meltano.com/developer-tools/contributor-guide.html
+- Meltano Slack channel
+
+## Thanks
+
+- Obligatory "we're hiring" message
+
+## Questions?

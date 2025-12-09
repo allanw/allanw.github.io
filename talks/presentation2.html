@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Allan Whatmough" />
+  <title>Sydney DBT Meetup - Meltano</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="presentation2_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; } /* Keyword */
+code > span.dt { color: #dfdfbf; } /* DataType */
+code > span.dv { color: #dcdccc; } /* DecVal */
+code > span.bn { color: #dca3a3; } /* BaseN */
+code > span.fl { color: #c0bed1; } /* Float */
+code > span.ch { color: #dca3a3; } /* Char */
+code > span.st { color: #cc9393; } /* String */
+code > span.co { color: #7f9f7f; } /* Comment */
+code > span.ot { color: #efef8f; } /* Other */
+code > span.al { color: #ffcfaf; } /* Alert */
+code > span.fu { color: #efef8f; } /* Function */
+code > span.er { color: #c3bf9f; } /* Error */
+code > span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+code > span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code > span.sc { color: #dca3a3; } /* SpecialChar */
+code > span.vs { color: #cc9393; } /* VerbatimString */
+code > span.ss { color: #cc9393; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #f0dfaf; } /* ControlFlow */
+code > span.op { color: #f0efd0; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code > span.at { } /* Attribute */
+code > span.do { color: #7f9f7f; } /* Documentation */
+code > span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code > span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+</style>
+
+<link rel="stylesheet" href="presentation2_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Sydney DBT Meetup - Meltano</h1>
+    <h2 class="author">Allan Whatmough</h2>
+    <h3 class="date">12th March 2020</h3>
+</section>
+
+<section id="whoami" class="slide level2">
+<h2>$ whoami</h2>
+<ul>
+<li>Data engineer (previously a software developer/web developer)</li>
+<li>Working at Open Colleges</li>
+<li>Moving to dbt/Snowflake at work</li>
+<li>Testing out Meltano in spare time</li>
+</ul>
+<aside class="notes">
+OC is a provider of online vocational education
+</aside>
+</section>
+<section id="what-is-meltano" class="slide level2">
+<h2>What is Meltano?</h2>
+<p><img src="assets/meltano.png" /></p>
+<ul>
+<li><strong><em>M</em></strong>odel</li>
+<li><strong><em>E</em></strong>xtract</li>
+<li><strong><em>L</em></strong>oad</li>
+<li><strong><em>T</em></strong>ransform</li>
+<li><strong><em>A</em></strong>nalyse</li>
+<li><strong><em>N</em></strong>otebook</li>
+<li><strong><em>O</em></strong>rchestrate</li>
+</ul>
+</section>
+<section id="what-is-meltano-1" class="slide level2">
+<h2>What is Meltano?</h2>
+<p><img src="assets/meltano.png" /></p>
+<ul>
+<li>Developed by GitLab</li>
+<li>“Data dashboards for startup founders”</li>
+<li>“Analytics software to visualize your business operations”</li>
+<li>Convention over configuration</li>
+<li>Designed to be an end-to-end solution</li>
+</ul>
+<aside class="notes">
+Anyone already heard of Meltano?
+</aside>
+</section>
+<section id="what-is-meltano-2" class="slide level2">
+<h2>What is Meltano?</h2>
+<p><img src="assets/meltano_tech.png" /></p>
+</section>
+<section id="im-gonna-have-to-go-ahead-and-ask-you" class="slide level2">
+<h2>I’m gonna have to go ahead and ask you…</h2>
+<p><img src="assets/lumbergh.jpg" /></p>
+<ul>
+<li>
+Is this a turnkey solution?<span class="fragment"> No</span>
+</li>
+<li>
+Is it enterprise-ready?<span class="fragment"> No!</span>
+</li>
+</ul>
+</section>
+<section id="meltanos-target-persona" class="slide level2">
+<h2>Meltano’s target persona</h2>
+<ul>
+<li>Startup founders, “using Meltano in single player mode”</li>
+<li>Busy people, don’t have “analyst” or “engineer” in their job title</li>
+<li>“Needs to do both engineering tasks and analyst tasks because there is nobody else”</li>
+<li>Would rather stay away from the CLI</li>
+</ul>
+<p><img src="assets/startup.jpeg" /></p>
+<p><small><a href="https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/" class="uri">https://meltano.com/blog/2019/11/11/clarifying-the-target-persona-for-meltano/</a></small></p>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<blockquote>
+<p>“Building <del>machine learning</del> data systems in <del>2019</del> 2020 feels like stacking together Lego. Except, you have to construct all the Lego pieces from scratch. In the dark.” <small>Stephen Whitworth, Monzo Bank, <a href="https://stephen.sh/posts/why-is-building-ml-systems-so-hard" class="uri">https://stephen.sh/posts/why-is-building-ml-systems-so-hard</a></small></p>
+</blockquote>
+<p><img src="assets/drake_dbt.png" /></p>
+<aside class="notes">
+Found this on the dbt Slack channel
+</aside>
+</section>
+<section id="built-in-data-sources" class="slide level2">
+<h2>Built in data sources</h2>
+<ul>
+<li>Some frequently used SaaS platforms (and adding more)</li>
+<li>Uses Singer so custom taps are possible</li>
+</ul>
+<p><img src="assets/connectors.png" /></p>
+</section>
+<section id="targets" class="slide level2">
+<h2>Targets</h2>
+<p><img src="assets/targets.png" /></p>
+</section>
+<section id="visualisation" class="slide level2">
+<h2>Visualisation</h2>
+<ul>
+<li>Alternative to other visualisation tools</li>
+</ul>
+<p><img src="assets/vistools.png" /></p>
+</section>
+<section id="orchestration" class="slide level2">
+<h2>Orchestration</h2>
+<ul>
+<li>Alternative to other orchestration tools/schedulers/workflow engines</li>
+<li>Uses Airflow under the hood (just scheduler, UI not exposed)</li>
+</ul>
+<p><img src="assets/orchestration.png" /></p>
+</section>
+<section id="creating-custom-extractors" class="slide level2">
+<h2>Creating custom extractors</h2>
+<ul>
+<li>Follows Singer tap spec
+<pre class="small">meltano add --custom extractor tap-surveymonkey</pre></li>
+<li>Tap-specific settings defined in <span class="small"><code>meltano.yml</code>
+</pre>
+file and reference <span class="small"><code>.env</code>
+</pre>
+file</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">    settings:
+    - env: ACCESS_TOKEN
+      name: access_token
+    - env: START_DATE
+      name: start_date
+    - env: SURVEY_ID
+      name: survey_id</code></pre></div>
+<pre>meltano invoke tap-gitlab-custom --discover</pre>
+<pre>meltano elt tap-surveymonkey target-postgresql</pre>
+<aside class="notes">
+Discover will output the catalog/properties (JSON schema)
+</aside>
+</section>
+<section id="topic-files" class="slide level2">
+<h2>Topic files</h2>
+<ul>
+<li>Similar in some ways to lookml</li>
+</ul>
+<pre class="small">model/surveymonkey.topic.m5o</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">{
+  version = <span class="dv">1</span>
+  name = surveymonkey
+  plugin_namespace = tap_surveymonkey
+  connection = postgres_db
+  <span class="kw">label</span> = SurveyMonkey
+  designs {
+    responses_source {
+      <span class="kw">label</span> = Responses
+      <span class="kw">from</span> = responses_source
+      description = Survey Monkey responses
+      joins {
+        survey_details {
+          <span class="kw">label</span> = SurveyDetails
+          sql_on = <span class="ot">&quot;responses_source.choice_id = survey_details.choice_id&quot;</span>
+          relationship = many_to_one
+        }
+        questions {
+          <span class="kw">label</span> = Questions
+          sql_on = <span class="ot">&quot;responses_source.question_id = questions.question_id&quot;</span>
+          relationship = many_to_one
+        }
+      }
+    }
+    surveystats {
+      <span class="kw">label</span> = Survey Stats
+      <span class="kw">from</span> = survey_stats
+      description = Survey Monkey Stats
+    }
+  }
+}</code></pre></div>
+</section>
+<section id="table-files" class="slide level2">
+<h2>Table files</h2>
+<pre class="small">model/survey_stats.table.m5o</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">{
+  version = <span class="dv">1</span>
+  sql_table_name = surveymonkey
+  name = survey_stats
+  <span class="kw">columns</span> {
+    heading {
+      <span class="kw">label</span> = Heading
+      hidden = <span class="kw">false</span>
+      <span class="kw">type</span> = string
+      sql = <span class="ot">&quot;{{TABLE}}.heading&quot;</span>
+    }
+    choice_text {
+      <span class="kw">label</span> = Choice Text
+      hidden = <span class="kw">false</span>
+      <span class="kw">type</span> = string
+      sql = <span class="ot">&quot;{{TABLE}}.choice_text&quot;</span>
+    }
+  }
+
+...</code></pre></div>
+</section>
+<section id="table-files-continued" class="slide level2">
+<h2>Table files (continued)</h2>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">...
+  aggregates {
+    total {
+      <span class="kw">label</span> = Totals
+      description = Totals
+      <span class="kw">type</span> = <span class="fu">sum</span>
+      sql = <span class="ot">&quot;{{table}}.count_choices&quot;</span>
+    }</code></pre></div>
+</section>
+<section id="enter-dbt" class="slide level2">
+<h2>Enter dbt</h2>
+<ul>
+<li>dbt is the ‘T’ in Meltano</li>
+<li>Critical step in the pipeline as it defines how data will be represented in the database/warehouse</li>
+</ul>
+</section>
+<section id="dbt-profiles-file" class="slide level2">
+<h2>dbt profiles file</h2>
+<ul>
+<li>dbt config files by Meltano as part of installation</li>
+</ul>
+<pre class="small">transform/profile/profiles.yml</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql">config:
+  send_anonymous_usage_stats: <span class="kw">False</span>
+  use_colors: <span class="kw">True</span>
+meltano:
+  target: <span class="ot">&quot;{{ env_var(&#39;DBT_TARGET&#39;) }}&quot;</span>
+  outputs:
+    snowflake:
+      type: snowflake
+      threads: <span class="dv">2</span>
+      account: <span class="ot">&quot;{{ env_var(&#39;SF_ACCOUNT&#39;) }}&quot;</span>
+      user: <span class="ot">&quot;{{ env_var(&#39;SF_USER&#39;) }}&quot;</span>
+      password: <span class="ot">&quot;{{ env_var(&#39;SF_PASSWORD&#39;) }}&quot;</span>
+      role: <span class="ot">&quot;{{ env_var(&#39;SF_ROLE&#39;) }}&quot;</span>
+      database: <span class="ot">&quot;{{ env_var(&#39;SF_DATABASE&#39;) }}&quot;</span>
+      warehouse: <span class="ot">&quot;{{ env_var(&#39;SF_WAREHOUSE&#39;) }}&quot;</span>
+      schema: <span class="ot">&quot;{{ env_var(&#39;MELTANO_ANALYZE_SCHEMA&#39;, &#39;ANALYTICS&#39;) }}&quot;</span></code></pre></div>
+</section>
+<section id="dbt-models" class="slide level2">
+<h2>dbt models</h2>
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/surveymonkey.sql</pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">with</span> questions <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;questions&#39;</span>) }}
+),
+
+responses <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;responses_source&#39;</span>) }}
+),
+
+survey_details <span class="kw">as</span> (
+        <span class="kw">select</span> * <span class="kw">from</span> {{ <span class="fu">ref</span>(<span class="st">&#39;survey_details&#39;</span> ) }}
+)
+
+<span class="kw">select</span>
+        qu.heading <span class="kw">as</span> heading,
+        sd.choice_text <span class="kw">as</span> choice_text,
+        <span class="fu">count</span>(sd.choice_id) <span class="kw">as</span> count_choices
+<span class="kw">from</span>
+  questions qu
+<span class="kw">join</span> responses r <span class="kw">on</span> qu.question_id = r.question_id
+<span class="kw">join</span> survey_details sd <span class="kw">on</span> sd.choice_id = r.choice_id
+<span class="kw">group</span> <span class="kw">by</span> qu.heading, sd.choice_text</code></pre></div>
+</section>
+<section id="dbt-models-continued" class="slide level2">
+<h2>dbt models (continued)</h2>
+<pre class="small">transform/models/my_meltano_project/surveymonkey/transform/survey_details.sql </pre>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">with</span> questions <span class="kw">as</span> (
+  
+<span class="kw">select</span>  json_array_elements(sd.pages:<span class="ch">:json</span>)-&gt;<span class="st">&#39;questions&#39;</span> qus <span class="kw">from</span> tap_surveymonkey.survey_details sd
+),
+
+answers <span class="kw">as</span> (
+  <span class="kw">select</span>
+        json_array_elements(qus)-&gt;<span class="st">&#39;answers&#39;</span> ans
+  <span class="kw">from</span> questions
+)
+
+<span class="kw">select</span>
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;id&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> choice_id,
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;text&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> choice_text,
+  array_to_json(<span class="dt">array</span>[to_json(json_array_elements(ans-&gt;<span class="st">&#39;choices&#39;</span>)-&gt;<span class="st">&#39;image&#39;</span>-&gt;<span class="st">&#39;url&#39;</span>:<span class="ch">:TEXT</span>)])-&gt;&gt;<span class="dv">0</span>  <span class="kw">as</span> image_url
+<span class="kw">from</span> answers</code></pre></div>
+</section>
+<section id="demo" class="slide level2">
+<h2>Demo</h2>
+<ul>
+<li>Meltano UI</li>
+<li>Python (Flask) backend, Vue.js frontend</li>
+</ul>
+<aside class="notes">
+Easy to embed reports
+</aside>
+</section>
+<section id="next-stepshelpresources" class="slide level2">
+<h2>Next steps/help/resources/</h2>
+<ul>
+<li>Install locally (virtualenv/Docker)</li>
+<li>Sign up for a free hosted Meltano instance at <a href="https://meltano.com/" class="uri">https://meltano.com/</a></li>
+<li>Set up a provisioned Digital Ocean droplet using 1-click app (Packer templates are in Meltano repo)</li>
+<li>Contribute <a href="https://meltano.com/developer-tools/contributor-guide.html" class="uri">https://meltano.com/developer-tools/contributor-guide.html</a></li>
+<li>Meltano Slack channel</li>
+</ul>
+</section>
+<section id="thanks" class="slide level2">
+<h2>Thanks</h2>
+<ul>
+<li>Obligatory “we’re hiring” message</li>
+</ul>
+</section>
+<section id="questions" class="slide level2">
+<h2>Questions?</h2>
+</section>
+    </div>
+  </div>
+
+  <script src="presentation2_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="presentation2_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'presentation2_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

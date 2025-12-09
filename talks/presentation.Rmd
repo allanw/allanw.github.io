@@ -106,6 +106,12 @@ Greek for "governor", "helmsman" or "captain")
 
 ![](assets/airflow.png)
 
+## Why Kubernetes?
+
+- Scalable
+- Flexible
+- Fault tolerant
+
 ## Airflow
 
 - Developed by Airbnb then open sourced
